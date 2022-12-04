@@ -2,7 +2,7 @@ pipeline {
             options {timestamps()}
 
             environment {
-                registry = "MaxOnRem/jenkins-flask"
+                registry = "maxonrem/jenkins-flask"
                 registryCredential = 'dockerhub_id'
                 dockerImage = ''
             }
