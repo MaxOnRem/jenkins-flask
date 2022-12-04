@@ -1,8 +1,14 @@
 pipeline {
-               options {timestamps()}
+            options {timestamps()}
 
-               agent none
-               stages {
+            environment {
+                registry = "MaxOnRem/jenkins-flask"
+                registryCredential = 'dockerhub_id'
+                dockerImage = ''
+            }
+
+            agent none
+            stages {
                 stage('Check scm') {
                     agent any
                     steps {
@@ -36,7 +42,23 @@ pipeline {
                         failure {
                             echo "Oooppss!!! Tests failed!"
                         } // post
-                 } // stage Test
+                    } 
+                } // stage Test
+                stage('Image building') {
+                    steps {
+                        script {
+                            dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                        }
+                    }
+                }
+                stage('Deploy') {
+                    steps {
+                        script {
+                            docker.withRegistry( '', registryCredential ) {
+                                dockerImage.push()
+                            }
+                        }
+                    }
+                }
             } // stages
-        }
 }
